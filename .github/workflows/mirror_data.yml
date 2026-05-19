@@ -5,12 +5,17 @@ on:
     - cron: '25 13 * * 1-5'  # 9:25 AM ET (EDT) — 5 min before CCR skills run
   workflow_dispatch:           # Allow manual trigger
 
+permissions:
+  contents: write              # Required to commit and push CSV files
+
 jobs:
   mirror:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Fetch market breadth CSVs
         run: |
