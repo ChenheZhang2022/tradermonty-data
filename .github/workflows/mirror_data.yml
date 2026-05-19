@@ -54,17 +54,24 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GH_PAT}@github.com/ChenheZhang2022/tradermonty-data.git
 
+          # Pull latest before staging so concurrent runs don't conflict
+          git pull --rebase origin main
+
           git add data/
 
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes to commit (data already pushed by another run)"
             exit 0
           fi
 
           git commit -m "chore(data): snapshot ${DATE}"
 
+          # Retry push in case of a late-arriving concurrent commit
           for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break
-            echo "Push attempt $i failed, retrying in 5s..."
-            sleep 5
+            if git push origin main; then
+              break
+            fi
+            echo "Push attempt ${i} failed, re-pulling and retrying..."
+            git pull --rebase origin main
+            sleep 3
           done
