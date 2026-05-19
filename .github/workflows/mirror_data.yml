@@ -2,8 +2,13 @@ name: Mirror TraderMonty Market Data
 
 on:
   schedule:
-    - cron: '25 13 * * 1-5'  # 9:25 AM ET (EDT) — 5 min before CCR skills run
+    - cron: '25 13 * * 1-5'  # 9:25 AM ET (EDT)
   workflow_dispatch:
+
+# 🔒 关键：避免多个 workflow 同时写 main
+concurrency:
+  group: market-data-sync
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -15,8 +20,6 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Fetch market breadth CSVs
         run: |
@@ -34,13 +37,10 @@ jobs:
           curl --retry 3 --retry-delay 5 -f -o sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (bulletproof)
+      - name: Commit and push (safe)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          git fetch origin main
-          git reset --hard origin/main
 
           git add .
 
@@ -49,21 +49,6 @@ jobs:
             exit 0
           fi
 
-          git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
+          git commit -m "chore(data): refresh market data"
 
-          for i in 1 2 3 4 5; do
-            echo "Push attempt $i"
-
-            git fetch origin main
-            git rebase origin/main || {
-              echo "rebase failed, aborting and retrying..."
-              git rebase --abort || true
-              sleep 2
-              continue
-            }
-
-            git push origin main && break
-
-            echo "push failed, retrying..."
-            sleep 2
-          done
+          git push origin main
