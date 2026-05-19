@@ -5,10 +5,6 @@ on:
     - cron: '25 13 * * 1-5'
   workflow_dispatch:
 
-concurrency:
-  group: market-data-sync
-  cancel-in-progress: true
-
 permissions:
   contents: write
 
@@ -22,44 +18,42 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set timestamp
+        run: |
+          echo "DATE=$(date -u +%Y-%m-%d)" >> $GITHUB_ENV
+
+      - name: Create snapshot folder
+        run: |
+          mkdir -p data/${DATE}
+
       - name: Fetch market breadth CSVs
         run: |
-          curl --retry 3 --retry-delay 5 -f -o market_breadth_data.csv \
+          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/market_breadth_data.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_data.csv"
 
-          curl --retry 3 --retry-delay 5 -f -o market_breadth_summary.csv \
+          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/market_breadth_summary.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_summary.csv"
 
       - name: Fetch uptrend CSVs
         run: |
-          curl --retry 3 --retry-delay 5 -f -o uptrend_ratio_timeseries.csv \
+          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/uptrend_ratio_timeseries.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/uptrend_ratio_timeseries.csv"
 
-          curl --retry 3 --retry-delay 5 -f -o sector_summary.csv \
+          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (fully safe)
+      - name: Commit and push (append-only)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin main
-          git reset --hard origin/main
-
-          git add .
+          git add data/
 
           if git diff --cached --quiet; then
-            echo "No changes"
+            echo "No changes to commit"
             exit 0
           fi
 
-          git commit -m "chore(data): refresh market data"
-
-          # 🔥 critical: ensure latest remote before push
-          git pull --rebase origin main || {
-            echo "rebase conflict, aborting"
-            git rebase --abort || true
-            exit 1
-          }
+          git commit -m "chore(data): snapshot ${DATE}"
 
           git push origin main
