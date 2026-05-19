@@ -47,9 +47,12 @@ jobs:
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
       - name: Commit and push (append-only)
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GH_PAT}@github.com/ChenheZhang2022/tradermonty-data.git
 
           git add data/
 
