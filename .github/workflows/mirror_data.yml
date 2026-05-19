@@ -40,4 +40,5 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/ChenheZhang2022/tradermonty-data.git
           git add *.csv
           git diff --cached --quiet && echo "No changes to commit" || \
-            git commit -m "chore: update market data $(date -u +%Y-%m-%d)" && git push
+            git commit -m "chore: update market data $(date -u +%Y-%m-%d)" && \
+            git pull --rebase origin main && git push
