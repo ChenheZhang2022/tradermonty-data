@@ -5,6 +5,10 @@ on:
     - cron: '25 13 * * 1-5'
   workflow_dispatch:
 
+concurrency:
+  group: mirror-main
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -56,5 +60,8 @@ jobs:
 
           git commit -m "chore(data): snapshot ${DATE}"
 
-          git pull --rebase origin main
-          git push origin main
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push attempt $i failed, retrying in 5s..."
+            sleep 5
+          done
