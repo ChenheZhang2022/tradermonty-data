@@ -22,31 +22,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set timestamp
+      - name: Fetch CSVs
         run: |
-          echo "DATE=$(date -u +%Y-%m-%d)" >> $GITHUB_ENV
-
-      - name: Create snapshot folder
-        run: |
-          mkdir -p data/${DATE}
-
-      - name: Fetch market breadth CSVs
-        run: |
-          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/market_breadth_data.csv \
+          mkdir -p latest
+          curl --retry 3 --retry-delay 5 -f -o latest/market_breadth_data.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_data.csv"
-
-          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/market_breadth_summary.csv \
+          curl --retry 3 --retry-delay 5 -f -o latest/market_breadth_summary.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_summary.csv"
-
-      - name: Fetch uptrend CSVs
-        run: |
-          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/uptrend_ratio_timeseries.csv \
+          curl --retry 3 --retry-delay 5 -f -o latest/uptrend_ratio_timeseries.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/uptrend_ratio_timeseries.csv"
-
-          curl --retry 3 --retry-delay 5 -f -o data/${DATE}/sector_summary.csv \
+          curl --retry 3 --retry-delay 5 -f -o latest/sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (append-only)
+      - name: Commit and push
         env:
           GH_PAT: ${{ secrets.GH_PAT }}
         run: |
@@ -54,26 +42,17 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GH_PAT}@github.com/ChenheZhang2022/tradermonty-data.git
 
-          # Pull latest before staging so concurrent runs don't conflict
           git pull --rebase origin main
 
-          # Copy to fixed latest/ path for skill scripts to consume
-          mkdir -p latest
-          cp data/${DATE}/market_breadth_data.csv latest/market_breadth_data.csv
-          cp data/${DATE}/market_breadth_summary.csv latest/market_breadth_summary.csv
-          cp data/${DATE}/uptrend_ratio_timeseries.csv latest/uptrend_ratio_timeseries.csv
-          cp data/${DATE}/sector_summary.csv latest/sector_summary.csv
-
-          git add data/ latest/
+          git add latest/
 
           if git diff --cached --quiet; then
-            echo "No changes to commit (data already pushed by another run)"
+            echo "No changes to commit"
             exit 0
           fi
 
-          git commit -m "chore(data): snapshot ${DATE}"
+          git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
 
-          # Retry push in case of a late-arriving concurrent commit
           for i in 1 2 3; do
             if git push origin main; then
               break
