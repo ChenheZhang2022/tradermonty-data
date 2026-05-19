@@ -32,12 +32,12 @@ jobs:
           curl --retry 3 --retry-delay 5 -f -o sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (safe sync)
+      - name: Commit and push (robust sync)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # sync with remote to avoid non-fast-forward errors
+          # sync with latest remote state
           git fetch origin main
           git reset --hard origin/main
 
@@ -45,7 +45,14 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
-            git push origin main
+            exit 0
           fi
+
+          git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
+
+          # retry-safe push to handle race conditions
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin main && break
+            echo "Push conflict detected, retrying... attempt $i"
+            sleep 2
+          done
