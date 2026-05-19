@@ -56,4 +56,5 @@ jobs:
 
           git commit -m "chore(data): snapshot ${DATE}"
 
+          git pull --rebase origin main
           git push origin main
