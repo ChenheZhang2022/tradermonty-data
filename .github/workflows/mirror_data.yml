@@ -32,9 +32,12 @@ jobs:
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
       - name: Commit and push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/ChenheZhang2022/tradermonty-data.git
           git add *.csv
           git diff --cached --quiet && echo "No changes to commit" || \
             git commit -m "chore: update market data $(date -u +%Y-%m-%d)" && git push
