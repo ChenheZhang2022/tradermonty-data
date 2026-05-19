@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch market breadth CSVs
         run: |
@@ -32,12 +34,11 @@ jobs:
           curl --retry 3 --retry-delay 5 -f -o sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (robust sync)
+      - name: Commit and push (bulletproof)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # sync with latest remote state
           git fetch origin main
           git reset --hard origin/main
 
@@ -50,9 +51,19 @@ jobs:
 
           git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
 
-          # retry-safe push to handle race conditions
-          for i in 1 2 3; do
-            git pull --rebase origin main && git push origin main && break
-            echo "Push conflict detected, retrying... attempt $i"
+          for i in 1 2 3 4 5; do
+            echo "Push attempt $i"
+
+            git fetch origin main
+            git rebase origin/main || {
+              echo "rebase failed, aborting and retrying..."
+              git rebase --abort || true
+              sleep 2
+              continue
+            }
+
+            git push origin main && break
+
+            echo "push failed, retrying..."
             sleep 2
           done
