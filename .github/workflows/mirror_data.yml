@@ -57,7 +57,14 @@ jobs:
           # Pull latest before staging so concurrent runs don't conflict
           git pull --rebase origin main
 
-          git add data/
+          # Copy to fixed latest/ path for skill scripts to consume
+          mkdir -p latest
+          cp data/${DATE}/market_breadth_data.csv latest/market_breadth_data.csv
+          cp data/${DATE}/market_breadth_summary.csv latest/market_breadth_summary.csv
+          cp data/${DATE}/uptrend_ratio_timeseries.csv latest/uptrend_ratio_timeseries.csv
+          cp data/${DATE}/sector_summary.csv latest/sector_summary.csv
+
+          git add data/ latest/
 
           if git diff --cached --quiet; then
             echo "No changes to commit (data already pushed by another run)"
