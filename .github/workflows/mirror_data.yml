@@ -2,10 +2,9 @@ name: Mirror TraderMonty Market Data
 
 on:
   schedule:
-    - cron: '25 13 * * 1-5'  # 9:25 AM ET (EDT)
+    - cron: '25 13 * * 1-5'
   workflow_dispatch:
 
-# 🔒 关键：避免多个 workflow 同时写 main
 concurrency:
   group: market-data-sync
   cancel-in-progress: true
@@ -20,6 +19,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Fetch market breadth CSVs
         run: |
@@ -37,18 +38,28 @@ jobs:
           curl --retry 3 --retry-delay 5 -f -o sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
-      - name: Commit and push (safe)
+      - name: Commit and push (fully safe)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          git fetch origin main
+          git reset --hard origin/main
+
           git add .
 
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No changes"
             exit 0
           fi
 
           git commit -m "chore(data): refresh market data"
+
+          # 🔥 critical: ensure latest remote before push
+          git pull --rebase origin main || {
+            echo "rebase conflict, aborting"
+            git rebase --abort || true
+            exit 1
+          }
 
           git push origin main
