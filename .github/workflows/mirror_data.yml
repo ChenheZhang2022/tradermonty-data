@@ -42,7 +42,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GH_PAT}@github.com/ChenheZhang2022/tradermonty-data.git
 
-          git pull --rebase origin main
+          git pull --rebase --autostash origin main
 
           git add latest/
 
