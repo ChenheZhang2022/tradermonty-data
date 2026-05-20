@@ -25,13 +25,13 @@ jobs:
       - name: Fetch CSVs
         run: |
           mkdir -p latest
-          curl --retry 3 --retry-delay 5 -f -o latest/market_breadth_data.csv \
+          curl --retry 3 --retry-delay 5 --max-time 30 -f -o latest/market_breadth_data.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_data.csv"
-          curl --retry 3 --retry-delay 5 -f -o latest/market_breadth_summary.csv \
+          curl --retry 3 --retry-delay 5 --max-time 30 -f -o latest/market_breadth_summary.csv \
             "https://tradermonty.github.io/market-breadth-analysis/market_breadth_summary.csv"
-          curl --retry 3 --retry-delay 5 -f -o latest/uptrend_ratio_timeseries.csv \
+          curl --retry 3 --retry-delay 5 --max-time 30 -f -o latest/uptrend_ratio_timeseries.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/uptrend_ratio_timeseries.csv"
-          curl --retry 3 --retry-delay 5 -f -o latest/sector_summary.csv \
+          curl --retry 3 --retry-delay 5 --max-time 30 -f -o latest/sector_summary.csv \
             "https://raw.githubusercontent.com/tradermonty/uptrend-dashboard/main/data/sector_summary.csv"
 
       - name: Commit and push
@@ -53,11 +53,17 @@ jobs:
 
           git commit -m "chore: update market data $(date -u +%Y-%m-%d)"
 
+          pushed=false
           for i in 1 2 3; do
             if git push origin main; then
+              pushed=true
               break
             fi
             echo "Push attempt ${i} failed, re-pulling and retrying..."
             git pull --rebase origin main
             sleep 3
           done
+          if [ "$pushed" = false ]; then
+            echo "ERROR: All push attempts failed"
+            exit 1
+          fi
