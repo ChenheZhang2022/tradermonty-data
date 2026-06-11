@@ -41,10 +41,20 @@ status = {"fetched_at_utc": datetime.datetime.utcnow().isoformat() + "Z",
           "source": "yfinance", "degraded": False, "validation": {}, "errors": []}
 val = status["validation"]
 try:
-    qqq = yf_fetch("QQQ", adjust=True)
-    vix = yf_fetch("^VIX", adjust=True)
-    qqq.to_csv("latest/ohlcv_qqq.csv")
-    vix.to_csv("latest/ohlcv_vix.csv")
+    def merge_save(df, path):
+        # Union with existing rows (TV local push may be fresher than
+        # yfinance-on-CI); existing rows win on date conflict.
+        try:
+            old = pd.read_csv(path, parse_dates=["Date"], index_col="Date")
+            df.index = pd.to_datetime(df.index).tz_localize(None)
+            combined = pd.concat([df[~df.index.isin(old.index)], old]).sort_index()
+        except FileNotFoundError:
+            combined = df
+        combined.to_csv(path)
+        return combined
+
+    qqq = merge_save(yf_fetch("QQQ", adjust=True), "latest/ohlcv_qqq.csv")
+    vix = merge_save(yf_fetch("^VIX", adjust=True), "latest/ohlcv_vix.csv")
     status["qqq"] = {"rows": len(qqq), "last_date": str(qqq.index[-1])[:10]}
     status["vix"] = {"rows": len(vix), "last_date": str(vix.index[-1])[:10]}
 
