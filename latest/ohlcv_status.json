@@ -1,13 +1,13 @@
 {
- "fetched_at_utc": "2026-06-11T04:55:02.922543Z",
+ "fetched_at_utc": "2026-06-11T05:00:37.840722Z",
  "source": "yfinance",
  "yf_error": null,
  "qqq": {
-  "rows": 752,
-  "last_date": "2026-06-10"
+  "rows": 751,
+  "last_date": "2026-06-09"
  },
  "vix": {
-  "rows": 753,
-  "last_date": "2026-06-10"
+  "rows": 752,
+  "last_date": "2026-06-09"
  }
 }
