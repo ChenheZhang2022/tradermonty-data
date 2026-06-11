@@ -18,6 +18,7 @@ def via_yf():
         df = yf.download(sym, period="3y", auto_adjust=True, progress=False)
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
+        df = df.dropna(subset=["Close"])  # yfinance may emit a partial last row
         if len(df) < 300:
             raise RuntimeError(f"{sym}: only {len(df)} rows")
         out[name] = df[["Open", "High", "Low", "Close", "Volume"]]
