@@ -1,0 +1,14 @@
+{
+ "pushed_at_utc": "2026-06-11T05:43:44.360589Z",
+ "source": "tradingview_local",
+ "qqq": {
+  "added": 1,
+  "last_date": "2026-06-10",
+  "bars": 326
+ },
+ "vix": {
+  "added": 6,
+  "last_date": "2026-06-10",
+  "bars": 326
+ }
+}
