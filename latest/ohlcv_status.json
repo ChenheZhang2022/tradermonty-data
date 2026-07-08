@@ -1,9 +1,21 @@
 {
- "fetched_at_utc": "2026-07-08T13:06:22.778360Z",
- "source": "fmp_fallback_no_qqq",
- "degraded": true,
- "validation": {},
- "errors": [
-  "yfinance failed: QQQ: only 0 rows"
- ]
+ "fetched_at_utc": "2026-07-08T23:35:57.664026Z",
+ "source": "yfinance",
+ "degraded": false,
+ "validation": {
+  "spy_max_diff_pct": 0.0,
+  "vix_max_diff_pct": 0.0,
+  "qqq_spy_ret_corr_10d": 0.78,
+  "fmp_vs_yf_date_gap_days": 0,
+  "passed": true
+ },
+ "errors": [],
+ "qqq": {
+  "rows": 770,
+  "last_date": "2026-07-08"
+ },
+ "vix": {
+  "rows": 753,
+  "last_date": "2026-07-08"
+ }
 }
