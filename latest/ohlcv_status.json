@@ -1,21 +1,21 @@
 {
- "fetched_at_utc": "2026-07-08T23:35:57.664026Z",
+ "fetched_at_utc": "2026-07-09T14:05:25.760169Z",
  "source": "yfinance",
  "degraded": false,
  "validation": {
-  "spy_max_diff_pct": 0.0,
-  "vix_max_diff_pct": 0.0,
-  "qqq_spy_ret_corr_10d": 0.78,
+  "spy_max_diff_pct": 0.007,
+  "vix_max_diff_pct": 1.155,
+  "qqq_spy_ret_corr_10d": 0.775,
   "fmp_vs_yf_date_gap_days": 0,
   "passed": true
  },
  "errors": [],
  "qqq": {
-  "rows": 770,
-  "last_date": "2026-07-08"
+  "rows": 771,
+  "last_date": "2026-07-09"
  },
  "vix": {
-  "rows": 753,
-  "last_date": "2026-07-08"
+  "rows": 754,
+  "last_date": "2026-07-09"
  }
 }
