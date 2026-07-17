@@ -1,11 +1,11 @@
 {
- "fetched_at_utc": "2026-07-17T12:42:55.666793Z",
+ "fetched_at_utc": "2026-07-17T23:23:59.939358Z",
  "source": "yfinance",
  "degraded": true,
  "validation": {
   "spy_max_diff_pct": 0.0,
   "vix_max_diff_pct": 5.051,
-  "qqq_spy_ret_corr_10d": 0.848,
+  "qqq_spy_ret_corr_10d": 0.93,
   "fmp_vs_yf_date_gap_days": 0,
   "passed": false
  },
@@ -13,8 +13,8 @@
   "cross-validation failed; treat QQQ indicators as unverified"
  ],
  "qqq": {
-  "rows": 776,
-  "last_date": "2026-07-16"
+  "rows": 777,
+  "last_date": "2026-07-17"
  },
  "vix": {
   "rows": 760,
