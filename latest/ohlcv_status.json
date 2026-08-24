@@ -1,5 +1,5 @@
 {
- "fetched_at_utc": "2026-08-21T22:51:08.696573Z",
+ "fetched_at_utc": "2026-08-24T11:55:13.112370Z",
  "source": "yfinance",
  "degraded": true,
  "validation": {
@@ -17,7 +17,7 @@
   "last_date": "2026-08-21"
  },
  "vix": {
-  "rows": 785,
-  "last_date": "2026-08-21"
+  "rows": 786,
+  "last_date": "2026-08-24"
  }
 }
