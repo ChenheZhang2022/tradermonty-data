@@ -1,11 +1,11 @@
 {
- "fetched_at_utc": "2026-10-01T17:27:12.318800Z",
+ "fetched_at_utc": "2026-10-02T01:45:44.594209Z",
  "source": "yfinance",
  "degraded": true,
  "validation": {
-  "spy_max_diff_pct": 0.139,
+  "spy_max_diff_pct": 0.0,
   "vix_max_diff_pct": 3.821,
-  "qqq_spy_ret_corr_10d": 0.83,
+  "qqq_spy_ret_corr_10d": 0.825,
   "fmp_vs_yf_date_gap_days": 0,
   "passed": false
  },
