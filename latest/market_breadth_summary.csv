@@ -1,11 +1,11 @@
 Metric,Value
-Average Peaks (200MA),0.723
+Average Peaks (200MA),0.722
 Average Troughs (8MA < 0.4),0.232
 Total Peaks Count,7
 Total Troughs Count,6
 Total Troughs (8MA < 0.4) Count,10
-Analysis Period Start,2016-10-31
-Analysis Period End,2026-10-28
+Analysis Period Start,2016-11-01
+Analysis Period End,2026-10-29
 Total Trading Days,2512
 Average Peaks (50MA),0.679
 Average Troughs 50 (< 0.3),0.172
