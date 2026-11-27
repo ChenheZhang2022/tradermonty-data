@@ -1,5 +1,5 @@
 {
- "fetched_at_utc": "2026-11-27T04:25:12.330869Z",
+ "fetched_at_utc": "2026-11-27T20:10:05.343257Z",
  "source": "yfinance",
  "degraded": true,
  "validation": {
@@ -13,11 +13,11 @@
   "cross-validation failed; treat QQQ indicators as unverified"
  ],
  "qqq": {
-  "rows": 869,
-  "last_date": "2026-11-25"
+  "rows": 870,
+  "last_date": "2026-11-27"
  },
  "vix": {
-  "rows": 854,
-  "last_date": "2026-11-26"
+  "rows": 855,
+  "last_date": "2026-11-27"
  }
 }
